@@ -1,7 +1,6 @@
 import { View, Text, Image, FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-// Mock Data for testing
 const MOCK_BOOKS = [
   { id: '1', title: 'The Hobbit', genre: 'Fantasy', color: 'rgba(59, 130, 246, 0.2)' }, // Blue
   { id: '2', title: 'Deep Work', genre: 'Productivity', color: 'rgba(168, 85, 247, 0.2)' }, // Purple

@@ -1,10 +1,11 @@
 // Define the shape of the data we care about
 export interface Book {
-  id: string;
-  title: string;
-  authors: string[];
-  thumbnail: string;
-  description: string;
+  id: string
+  title: string
+  authors: string[]
+  thumbnail: string
+  description: string
+  categories: string[]
 }
 
 export const searchBooks = async (query: string): Promise<Book[]> => {
@@ -22,7 +23,8 @@ export const searchBooks = async (query: string): Promise<Book[]> => {
       title: item.volumeInfo.title,
       authors: item.volumeInfo.authors || ['Unknown Author'],
       thumbnail: item.volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:'), // Always use https for iOS
-      description: item.volumeInfo.description
+      description: item.volumeInfo.description,
+      categories: item.volumeInfo.categories || []
     })) || [];
   } catch (error) {
     console.error("Search failed:", error);
