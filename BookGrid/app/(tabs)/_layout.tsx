@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="LibraryScreen"
         options={{
-          title: 'Library',
+          title: 'BookGrid',
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>

@@ -1,11 +1,16 @@
-// Define the shape of the data we care about
+export interface Genre {
+  id: string;
+  name: string; // "Dystopian Fiction"
+  color: string; // "rgba(255, 0, 0, 0.5)"
+}
+
 export interface Book {
   id: string
   title: string
   authors: string[]
   thumbnail: string
   description: string
-  categories: string[]
+  userGenre?: string
 }
 
 export const searchBooks = async (query: string): Promise<Book[]> => {
