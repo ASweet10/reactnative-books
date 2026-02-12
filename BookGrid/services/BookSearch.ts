@@ -10,6 +10,8 @@ export interface Book {
   authors: string[]
   thumbnail: string
   description: string
+  pageCount?: number
+  publishedDate?: string
   userGenre?: string
 }
 
@@ -28,8 +30,9 @@ export const searchBooks = async (query: string): Promise<Book[]> => {
       title: item.volumeInfo.title,
       authors: item.volumeInfo.authors || ['Unknown Author'],
       thumbnail: item.volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:'), // Always use https for iOS
-      description: item.volumeInfo.description,
-      categories: item.volumeInfo.categories || []
+      description: item.volumeInfo.description || '',
+      pageCount: item.volumeInfo.pageCount || 0,
+      publishedDate: item.volumeInfo.publishedDate || '',
     })) || [];
   } catch (error) {
     console.error("Search failed:", error);

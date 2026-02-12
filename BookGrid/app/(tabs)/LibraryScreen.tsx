@@ -1,8 +1,9 @@
-import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, Image, FlatList, SectionList, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useLibrary } from '@/context/LibraryContext'
 import { Link, Href } from 'expo-router'
 import { useEffect } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const getGenreColor = (genre?: string) => {
   const category = genre?.toLowerCase() || '';
@@ -22,8 +23,15 @@ export default function LibraryScreen() {
     console.log(JSON.stringify(library, null, 2)) // stringify: see full object instead of [Object object]
   }, [library])
 
+  const sections = genres.map(genre => ({
+    title: genre.name,
+    color: genre.color,
+    // Find all books belonging to this specific genre
+    data: library.filter(book => book.userGenre === genre.name)
+  })).filter(section => section.data.length > 0)
+
   return (
-    <View className="flex-1">     
+    <SafeAreaView className="flex-1 bg-slate-800" edges={['top']}>     
       <FlatList
         data={library}
         numColumns={3}
@@ -73,6 +81,6 @@ export default function LibraryScreen() {
           </View>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
