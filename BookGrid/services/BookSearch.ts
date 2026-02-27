@@ -13,7 +13,9 @@ export interface Book {
   pageCount?: number
   publishedDate?: string
   userGenre?: string
+  notes?: string[]
 }
+
 
 export const searchBooks = async (query: string): Promise<Book[]> => {
   if (!query) return []
@@ -23,6 +25,9 @@ export const searchBooks = async (query: string): Promise<Book[]> => {
       `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&printType=books`
     )
     const data = await response.json()
+
+    console.log("API RAW DATA:", data)
+    if (!data.items) return []
     
     // Google Books returns a complex object; we map it to our simpler Book interface
     return data.items?.map((item: any) => ({
@@ -33,6 +38,7 @@ export const searchBooks = async (query: string): Promise<Book[]> => {
       description: item.volumeInfo.description || '',
       pageCount: item.volumeInfo.pageCount || 0,
       publishedDate: item.volumeInfo.publishedDate || '',
+      notes: item.notes || [],
     })) || [];
   } catch (error) {
     console.error("Search failed:", error);

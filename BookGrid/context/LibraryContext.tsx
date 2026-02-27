@@ -16,10 +16,13 @@ type LibraryContextType = {
   genres: Genre[]
   addBook: (book: Book) => void
   addGenre: (genre: Genre) => void
+  removeBook: (bookId: string) => void
   updateBookGenre: (bookId: string, genreName: string) => void
   deleteGenre: (genreName: string) => void
   editGenre: (oldName: string, updatedGenre: Genre) => void
   availableColors: string[]
+  addNote: (bookId: string, note: string) => void
+  deleteNote: (bookId: string, noteIndex: number) => void
 }
 
 const LibraryContext = createContext<LibraryContextType | undefined>(undefined);
@@ -32,9 +35,21 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   ])
 
   useEffect(() => {
+    const saveGenres = async () => {
+      try {
+        await AsyncStorage.setItem('genres', JSON.stringify(genres))
+      } catch (e) { console.error("Failed to save genres", e) }
+    }
+    saveGenres()
+  }, [genres])
+
+  useEffect(() => {
     const loadLibrary = async () => {
-      const storedData = await AsyncStorage.getItem('@my_library')
-      if (storedData) setLibrary(JSON.parse(storedData))
+      const savedLibrary = await AsyncStorage.getItem('@my_library')
+      const savedGenres = await AsyncStorage.getItem('@genres')
+      if (savedLibrary) setLibrary(JSON.parse(savedLibrary))
+
+      if (savedGenres) setGenres(JSON.parse(savedGenres))
     }
     loadLibrary()
   }, [])
@@ -95,8 +110,30 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const removeBook = async (bookId: string) => {
+    const updatedLibrary = library.filter(b => b.id !== bookId)
+    setLibrary(updatedLibrary)
+    await AsyncStorage.setItem('@my_library', JSON.stringify(updatedLibrary))
+  }
+
+  const addNote = (bookId: string, note: string) => {
+    setLibrary(prev => prev.map(book =>
+      book.id === bookId
+      ? { ...book, notes: [...(book.notes || []), note] }
+      : book
+    ))
+  }
+
+  const deleteNote = (bookId: string, noteIndex: number) => {
+    setLibrary(prev => prev.map(book =>
+      book.id === bookId
+        ? { ...book, notes: book.notes?.filter((_, i) => i !== noteIndex) }
+        : book
+    ))
+  }
+
   return (
-    <LibraryContext.Provider value={{ library, genres, availableColors, addBook, addGenre, updateBookGenre, deleteGenre, editGenre }}>
+    <LibraryContext.Provider value={{ library, genres, availableColors, addBook, removeBook, addGenre, updateBookGenre, deleteGenre, editGenre, addNote, deleteNote }}>
       {children}
     </LibraryContext.Provider>
   )

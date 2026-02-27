@@ -1,37 +1,108 @@
-import { View, Text, Image, FlatList, SectionList, TouchableOpacity } from 'react-native'
+import { View, Text, Image, FlatList, SectionList, TouchableOpacity, Alert } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useLibrary } from '@/context/LibraryContext'
 import { Link, Href } from 'expo-router'
 import { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
-const getGenreColor = (genre?: string) => {
-  const category = genre?.toLowerCase() || '';
-
-  if (category.includes('fiction')) return 'rgba(31, 96, 200, 0.7)'; // Blue
-  if (category.includes('philosophy')) return 'rgba(168, 85, 247, 1)'; // Purple
-  if (category.includes('history')) return 'rgba(245, 158, 11, 0.6)'; // Amber
-  if (category.includes('science')) return 'rgba(16, 185, 129, 0.6)'; // Green
-  
-  return 'rgba(148, 163, 184, 0.2)'; // Default Slate
-}
+import * as Haptics from 'expo-haptics'
 
 export default function LibraryScreen() {
-  const { library, genres } = useLibrary()
+  const { library, genres, removeBook } = useLibrary()
 
   useEffect(() => {
     console.log(JSON.stringify(library, null, 2)) // stringify: see full object instead of [Object object]
   }, [library])
 
-  const sections = genres.map(genre => ({
+  const sections = [
+  // 1. Map your custom genres as usual
+  ...genres.map(genre => ({
+    id: genre.id,
     title: genre.name,
     color: genre.color,
-    // Find all books belonging to this specific genre
     data: library.filter(book => book.userGenre === genre.name)
-  })).filter(section => section.data.length > 0)
+  })),
+  // 2. Add an "Uncategorized" section for books that don't match any genre
+  {
+    id: 'uncategorized',
+    title: 'Uncategorized',
+    color: '#94a3b8',
+    data: library.filter(book => 
+      !book.userGenre || 
+      book.userGenre === 'Uncategorized' || 
+      !genres.find(g => g.name === book.userGenre)
+    )
+  }
+].filter(section => section.data.length > 0); // Only show sections with books
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-800" edges={['top']}>     
+    <SafeAreaView className="flex-1 bg-slate-800 pb-1" edges={['top']}>
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id}
+        stickySectionHeadersEnabled={false} // Set to true if you want the header to stay at the top as you scroll
+        renderSectionHeader={({ section: { title, color } }) => (
+          <View className="px-6 py-3 flex-row items-center bg-slate-800">          
+            <Text className="text-xl font-extrabold" style={{ color: color }}>
+              {title}
+            </Text>
+          </View>
+        )}
+        renderItem={({ section, index }) => {
+          if (index !== 0) return null; // Used to maintain horizontal rows. For vertical, just return book item here
+          return (
+            <FlatList
+              numColumns={3}
+              data={section.data}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 0 }}
+              className='mx-5'
+              renderItem={({ item }) => {
+                if (index !== 0) return null;
+                // Fetch color for this specific book's genre
+                const currentBookGenre = genres.find(g => g.name === item.userGenre);
+                const foilColor = currentBookGenre ? currentBookGenre.color : 'rgba(148, 163, 184, 0.5)';
+
+                return (
+                  <View style={{ width: '33%' }}>
+
+                      <Link href={`/book/${item.id}`} asChild>
+                        <TouchableOpacity 
+                          className="h-48 w-full overflow-hidden shadow-2xl bg-slate-700"
+                          onLongPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+                            Alert.alert(
+                              "Remove Book",
+                              `Are you sure you want to remove "${item.title}" from your library?`,
+                              [
+                                { text: "Cancel", style: "cancel" },
+                                { 
+                                  text: "Remove", 
+                                  style: "destructive", 
+                                  onPress: () => removeBook(item.id)
+                                }
+                              ]
+                            )
+                          }}
+                        >
+                          <Image source={{ uri: item.thumbnail }} className="w-full h-full" resizeMode="cover" />
+                          
+                          <LinearGradient 
+                            colors={[foilColor, 'rgba(255,255,255,0.2)', foilColor]}
+                            className="absolute inset-0"
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                          />
+                        </TouchableOpacity>
+                      </Link>
+                  </View>
+                );
+              }}
+            />
+          )
+        }}
+      />
+      {/*
       <FlatList
         data={library}
         numColumns={3}
@@ -51,36 +122,27 @@ export default function LibraryScreen() {
                     </View>
 
                     <LinearGradient 
-                      // A 'holographic' array: Color -> Highlight -> Color
                       colors={[foilColor, 'rgba(255,255,255,0.1)', foilColor]}
                       className="absolute inset-0"
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }} // Diagonal angle
                       //locations={[0, 0.5, 1]} // Puts the white highlight exactly in the middle
                     />
-                    {/*
-                    <LinearGradient 
-                      // A 'holographic' array: Color -> Highlight -> Color
-                      colors={[genreColor, 'rgba(255,255,255,0.4)', genreColor]} 
-                      className="absolute inset-0"
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }} // Diagonal angle
-                      locations={[0, 0.5, 1]} // Puts the white highlight exactly in the middle
-                    />
-                    */}
                   </View>
                 </View>
               </TouchableOpacity>
             </Link>
           )
         }}
-        // If list empty, show message
+
         ListEmptyComponent={() => (
           <View className="p-10 items-center">
             <Text className="text-slate-400">Your library is empty. Search for books to add!</Text>
           </View>
         )}
       />
+      */}
+      
     </SafeAreaView>
   );
 }
