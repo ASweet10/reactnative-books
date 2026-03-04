@@ -1,7 +1,7 @@
 import { View, Text, Image, FlatList, SectionList, TouchableOpacity, Alert } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useLibrary } from '@/context/LibraryContext'
-import { Link, Href } from 'expo-router'
+import { Link } from 'expo-router'
 import { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
@@ -14,14 +14,12 @@ export default function LibraryScreen() {
   }, [library])
 
   const sections = [
-  // 1. Map your custom genres as usual
   ...genres.map(genre => ({
     id: genre.id,
     title: genre.name,
     color: genre.color,
     data: library.filter(book => book.userGenre === genre.name)
   })),
-  // 2. Add an "Uncategorized" section for books that don't match any genre
   {
     id: 'uncategorized',
     title: 'Uncategorized',
@@ -59,13 +57,11 @@ export default function LibraryScreen() {
               className='mx-5'
               renderItem={({ item }) => {
                 if (index !== 0) return null;
-                // Fetch color for this specific book's genre
                 const currentBookGenre = genres.find(g => g.name === item.userGenre);
                 const foilColor = currentBookGenre ? currentBookGenre.color : 'rgba(148, 163, 184, 0.5)';
 
                 return (
                   <View style={{ width: '33%' }}>
-
                       <Link href={`/book/${item.id}`} asChild>
                         <TouchableOpacity 
                           className="h-48 w-full overflow-hidden shadow-2xl bg-slate-700"
@@ -101,48 +97,7 @@ export default function LibraryScreen() {
             />
           )
         }}
-      />
-      {/*
-      <FlatList
-        data={library}
-        numColumns={3}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const currentBookGenre = genres.find(g => g.name === item.userGenre);
-          const foilColor = currentBookGenre ? currentBookGenre.color : 'rgba(148, 163, 184, 0.2)'
-
-          return (
-            <Link href={`/book/${item.id}` as Href} asChild>
-              <TouchableOpacity className='w-1/3'>
-                <View className="w-full">
-                  <View className="relative h-60 w-full overflow-hidden shadow-sm bg-white">
-                    <Text>{item.title}</Text>
-                    <View className="absolute inset-0 bg-slate-200 items-center justify-center">
-                      <Image source={{ uri: item.thumbnail }} className='w-full h-full' resizeMode='cover'/>
-                    </View>
-
-                    <LinearGradient 
-                      colors={[foilColor, 'rgba(255,255,255,0.1)', foilColor]}
-                      className="absolute inset-0"
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }} // Diagonal angle
-                      //locations={[0, 0.5, 1]} // Puts the white highlight exactly in the middle
-                    />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </Link>
-          )
-        }}
-
-        ListEmptyComponent={() => (
-          <View className="p-10 items-center">
-            <Text className="text-slate-400">Your library is empty. Search for books to add!</Text>
-          </View>
-        )}
-      />
-      */}
-      
+      />      
     </SafeAreaView>
-  );
+  )
 }

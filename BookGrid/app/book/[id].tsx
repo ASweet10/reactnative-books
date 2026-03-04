@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
-import { View, Text, Image, ScrollView, Modal, TextInput, TouchableOpacity, Button, Linking, Pressable } from 'react-native'
+import { View, Text, Image, ScrollView, Modal, TextInput, TouchableOpacity, Button, Linking } from 'react-native'
 import { useState } from 'react'
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router'
 import { useLibrary } from '@/context/LibraryContext'
@@ -111,9 +111,7 @@ export default function BookDetails() {
         <TouchableOpacity onPress={() => router.back()} className="p-2 bg-transparent rounded-full">
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
-        <Text className="text-xl pl-4 font-bold text-white" numberOfLines={1}>
-          Book Details
-        </Text>
+        <Text className="text-xl pl-4 font-bold text-white" numberOfLines={1}>Book Details</Text>
       </View>
 
       <ScrollView className="flex-1 bg-slate-900">
@@ -122,9 +120,7 @@ export default function BookDetails() {
               <Image source={{ uri: book.thumbnail }} className="w-full h-full" resizeMode="cover" />
             </View>
 
-            <Text className="text-3xl font-bold text-center my-8 mx-8"
-              style={{ color: currentGenre.color }}
-            >
+            <Text className="text-3xl font-bold text-center my-8 mx-8" style={{ color: currentGenre.color }}>
               {book.title}
             </Text>
 
@@ -164,12 +160,8 @@ export default function BookDetails() {
               <Text className="font-medium">{g.name}</Text>
             </TouchableOpacity>
           ))}
-          
-          {/* The + Button */}
-          <TouchableOpacity 
-            onPress={() => setEditGenreModalVisible(true)}
-            className="px-4 py-2 rounded-full bg-slate-200"
-          >
+
+          <TouchableOpacity onPress={() => setEditGenreModalVisible(true)} className="px-4 py-2 rounded-full bg-slate-200">
             <Text className="font-bold">+</Text>
           </TouchableOpacity>
         </View>
@@ -291,7 +283,6 @@ export default function BookDetails() {
               value={newGenreName}
               onChangeText={setNewGenreName}
             />
-            
             <View className="flex-row flex-wrap mb-10">
               {availableColors.map(color => {
                 const isUsedByOthers = usedColors.includes(color)
@@ -342,11 +333,9 @@ export default function BookDetails() {
           onRequestClose={() => setNoteModalVisible(false)}
           statusBarTranslucent={true} // Cover top of screen
         >
-
           <View className="flex-1 justify-center items-center bg-black/80 px-6">
             <View className="w-full rounded-3xl p-6 shadow-2xl bg-slate-900">
               <Text className="text-2xl text-white font-bold text-center">My Notes</Text>
-
               <ScrollView className="max-h-60 my-4">
                 { book.notes?.map((note, index) => {
                   const parts = note.split(' | ')
@@ -358,7 +347,6 @@ export default function BookDetails() {
                     <View key={index} className='flex-row items-center justify-between bg-white/10 p-3 rounded-xl mb-3'>
                       <View className='flex-1 mr-3'>
                         <Text className="italic text-lg" style={{ color: currentGenre.color }} numberOfLines={2}>{displayTitle}</Text>
-                      
                         {subText && (
                           <Text className="text-slate-400 text-xs mt-1" numberOfLines={1}>
                             {subText}
@@ -374,7 +362,6 @@ export default function BookDetails() {
                 }
               </ScrollView>
 
-              {/* Note Input Area */}
               <TextInput
                 className="bg-white/20 rounded-xl p-4 text-white mb-4 mt-10"
                 placeholder="Type a note..."
@@ -384,10 +371,7 @@ export default function BookDetails() {
               />
               
               <View className="flex-row gap-3">
-                <TouchableOpacity 
-                  onPress={() => setNoteModalVisible(false)}
-                  className="flex-1 bg-white/20 py-3 rounded-xl items-center"
-                >
+                <TouchableOpacity onPress={() => setNoteModalVisible(false)} className="flex-1 bg-white/20 py-3 rounded-xl items-center">
                   <Text className="text-white font-bold">Close</Text>
                 </TouchableOpacity>
                 
@@ -403,5 +387,5 @@ export default function BookDetails() {
           </View>
         </Modal>
     </SafeAreaView>
-  );
+  )
 }

@@ -1,10 +1,10 @@
 const YOUTUBE_API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY
 
 export const fetchYouTubeTitle = async (url: string) => {
-    if (!YOUTUBE_API_KEY) {
-        console.warn("YouTube API Key is missing! Check your .env file.");
-        return null;
-    }
+  if (!YOUTUBE_API_KEY) {
+    console.warn("YouTube API Key is missing! Check your .env file.")
+    return null
+  }
     
   // Regex to extract the ID from various YouTube URL formats
   const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/

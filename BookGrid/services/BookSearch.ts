@@ -1,6 +1,6 @@
 export interface Genre {
   id: string;
-  name: string; // "Dystopian Fiction"
+  name: string;
   color: string; // "rgba(255, 0, 0, 0.5)"
 }
 
@@ -16,7 +16,6 @@ export interface Book {
   notes?: string[]
 }
 
-
 export const searchBooks = async (query: string): Promise<Book[]> => {
   if (!query) return []
   
@@ -25,7 +24,6 @@ export const searchBooks = async (query: string): Promise<Book[]> => {
       `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&printType=books`
     )
     const data = await response.json()
-
     console.log("API RAW DATA:", data)
     if (!data.items) return []
     

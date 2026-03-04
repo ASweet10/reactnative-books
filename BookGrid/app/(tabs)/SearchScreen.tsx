@@ -27,20 +27,13 @@ export default function SearchScreen() {
 
   return (
     <View className="flex-1 bg-slate-800 p-4 pt-12">
-      {/* Search Input Area */}
       <View className="flex-row items-center bg-slate-100 rounded-full px-4 py-2 mb-6">
         <TextInput
           className="flex-1 h-10 text-slate-800"
           placeholder="Search for a book..."
           value={query}
           onChangeText={setQuery}
-          //onSubmitEditing={handleSearch} // Triggers when user hits "Search" on keyboard
         />
-        {/*
-        <TouchableOpacity onPress={handleSearch}>
-          <Text className="text-blue-500 font-bold ml-2">Search</Text>
-        </TouchableOpacity>
-        */}
       </View>
 
       <FlatList data={results} keyExtractor={(item) => item.id}
@@ -58,14 +51,12 @@ export default function SearchScreen() {
               <Text className="text-slate-500">{item.authors.join(', ')}</Text>
             </View>
 
-            <TouchableOpacity onPress={() => addBook(item)} className="bg-blue-500 p-2 rounded-md"
-            >
+            <TouchableOpacity onPress={() => addBook(item)} className="bg-blue-500 p-2 rounded-md">
               <Text className="text-white text-xs font-bold">Add to Library</Text>
             </TouchableOpacity>
           </View>
-          
         )}
       />
     </View>
-  );
+  )
 }
